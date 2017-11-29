@@ -10,13 +10,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
+
 import com.loong.util.ThreeDES;
 
 public class MyHttpServletResponse extends HttpServlet{
 	private static final long serialVersionUID = 1L;
+	
+	private static Logger logger = Logger.getLogger(MyHttpServletResponse.class); 
+	
 	private ThreeDES td;
 	private String secretKey;
-	
 	public MyHttpServletResponse(String secretKey){
 		this.secretKey = secretKey;
 		td = new ThreeDES();
@@ -41,7 +45,8 @@ public class MyHttpServletResponse extends HttpServlet{
 			String name = paramNames.nextElement();
 			String value = request.getParameter(name);
 //			pw.println(name + "=" + value);
-			System.out.println(name + "=" + value);
+//			System.out.println(name + "=" + value);
+			logger.info(name + "=" + value);
 		}
 		//获取post请求中body体内容并打印
 		String reqBodyData;
@@ -53,7 +58,8 @@ public class MyHttpServletResponse extends HttpServlet{
 			e.printStackTrace();
 			reqBodyData = "";
 		}
-		System.out.println("requestBody===>:" + reqBodyData);
+//		System.out.println("requestBody===>:" + reqBodyData);
+		logger.info("requestBody===>:" + reqBodyData);
 		//定制响应内容，当请求body体为""时返回fail，否则返回success
 		if("".equals(reqBodyData)){
 			os.write(td.encryptMode("fail".getBytes("UTF-8"),secretKey));
