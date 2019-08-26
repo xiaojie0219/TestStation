@@ -49,6 +49,8 @@ public class HttpServerDemo {
 //		context.addServlet(new ServletHolder(new MyHttpServletResponse02()), "/access/do02");
 		context.addServlet(ServletHolderSimpleFactory.getServetHolder("/api/access/do"),"/api/access/do");
 		context.addServlet(ServletHolderSimpleFactory.getServetHolder("/test"),"/test");
+		context.addServlet(ServletHolderSimpleFactory.getServetHolder("/getAgentKey"),"/getAgentKey");
+		context.addServlet(ServletHolderSimpleFactory.getServetHolder("/getAgentKeyNew"),"/getAgentKeyNew");
 		System.out.println("server start...");
 		server.start();
 		server.join();

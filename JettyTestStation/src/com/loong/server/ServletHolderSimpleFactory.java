@@ -24,6 +24,12 @@ public class ServletHolderSimpleFactory extends ServletHolder{
 		if("/test".equals(requestUriPath)){
 			shsf = new ServletHolder(new MyHttpServletResponse2());
 		}
+		if("/getAgentKey".equals(requestUriPath)){
+			shsf = new ServletHolder(new MyHttpServletResponse3());
+		}
+		if("/getAgentKeyNew".equals(requestUriPath)){
+			shsf = new ServletHolder(new MyHttpServletResponse4());
+		}
 		return shsf;
 	}
 }
