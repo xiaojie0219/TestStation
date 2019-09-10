@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,8 +39,8 @@ public class MyHttpServletResponse4 extends HttpServlet {
 		try {
 			String reqBodyData = new String(baos.toByteArray(), "UTF-8");
 			if("".equals(reqBodyData) || reqBodyData==null){
-				logger.info("requestBody===>:你使用的是GET请求方式或POST请求Body体内容为空");
-				os.write("你使用的是GET请求方式或POST请求Body体内容为空".getBytes("UTF-8"));
+				logger.info("requestBody===>:POST请求Body体中的内容为空");
+				os.write("POST请求Body体中的内容为空".getBytes("UTF-8"));
 			}else{
 				logger.info("requestBody===>:" + reqBodyData);
 				String str[] = reqBodyData.split("&");
@@ -60,7 +61,44 @@ public class MyHttpServletResponse4 extends HttpServlet {
 	
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
-		doPost(request, response);
+		// 自定义响应内容
+		OutputStream os = response.getOutputStream();
+		response.setContentType("text/html;charset=utf-8");
+		response.setCharacterEncoding("utf-8");
+		response.setStatus(HttpServletResponse.SC_OK);
+
+		// 读取请求内容
+		InputStream is = request.getInputStream();
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		int temp = 0;
+		while ((temp = is.read()) != -1) {
+			baos.write(temp);
+		}
+
+		// 获取请求url中的参数名称和内容，注意非body体中的请求内容
+		Enumeration<String> paramNames = request.getParameterNames();
+		if(!paramNames.hasMoreElements()){
+			logger.info("GET请求中未传agentId和agentInsertTime参数");
+			os.write("GET请求中未传agentId和agentInsertTime参数".getBytes("UTF-8"));
+		}else{
+			Map<String, String> rmap = new HashMap<String, String>();
+			while (paramNames.hasMoreElements()) {
+				String name = paramNames.nextElement();
+				String value = request.getParameter(name);
+				logger.info(name + "=" + value);
+				rmap.put(name, value);
+			}
+			if(rmap.get("agentId")==null || rmap.get("agentInsertTime")==null){
+				logger.info("你使用的是GET请求，请检查是否传入正确的agentId和agentInsertTime参数");
+				os.write("你使用的是GET请求，请检查是否传入正确的agentId和agentInsertTime参数".getBytes("UTF-8"));
+			}else{
+				GetAgentKey getAgentKey = new GetAgentKey(rmap.get("agentId"),
+						rmap.get("agentInsertTime"));
+				String resStr = getAgentKey.getPrivateKeyNew();
+				os.write(resStr.getBytes("UTF-8"));
+			}
+		}
+
 	}
 
 }
